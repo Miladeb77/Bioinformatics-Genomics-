@@ -1,0 +1,108 @@
+def reading_file(path):
+    return open(path,'r')
+
+def file_to_dict(path):
+    f= reading_file('G://dna.example.fasta')
+    seqs={}
+    name= ''
+    for line in f:
+        # discarding any new line at the end
+        line= line.rstrip()
+        #distinquishing header from the sequence
+        if line[0]== '>':
+            #spliting the line into words so that we could get our key for the dictionary
+            words= line.split() # spliting is based on space by default
+            #building the key for dictionary and the key is the first word of the identifier line 
+            name= words[0][1: ]
+            #identifying the key and setting an empty value for it 
+            seqs[name]= ''
+        else: # for those lines that are not the header and re the lines for the sequences
+            seqs[name]= seqs[name]+ line
+    return seqs
+def find_ORF_details(ORFs):
+    ORF_details= {}
+    for key,value in ORFs.items():
+        max_len_ORF= 0
+        max_NUM= 0
+        max_value= ''
+        for i in range(len(value)):
+            if len(value[i]) > max_len_ORF:
+                max_NUM= i
+                max_len_ORF= len(value[i])
+                max_value= value[i]
+        ORF_details[key]= {"max_len_ORF":max_len_ORF,"max_NUM": max_NUM, "max_value": max_value}
+    return ORF_details
+                            
+    
+
+def record_count():
+    f= reading_file('G://dna.example.fasta')
+    record_count= 0
+    # the number of records:
+    for line in f:
+        if line[0]== '>':
+            record_count+= 1
+    print(record_count)   
+
+record_count() 
+
+def sequence_length():
+    seqs= file_to_dict('G://dna.example.fasta')
+    min_len = 999999999  # initialize with a large value
+    min_values = []
+    min_keys = []
+    for key, value in seqs.items():
+        if len(value) < min_len:
+            min_len = len(value)
+            min_values = [value]
+            min_keys = [key]
+        elif len(value) == min_len:
+            min_values.append(value)
+            min_keys.append(key)
+    print("Minimum length:", min_len)
+    print("Keys with minimum length:", min_keys)
+   # print("Values with minimum length:", min_values)
+    # Initialize variables to keep track of key and value with longest string
+    longest_value = ""
+    longest_key = ""
+ # Iterate through each key-value pair in the dictionary
+    for key, value in seqs.items():
+        # Check if the length of the value is greater than the current longest value
+        if len(value) > len(longest_value):
+            # If so, update the longest value and key
+            longest_value = value
+            longest_key = key
+        # If the length of the value is the same as the current longest value, add the key to a list of keys with longest value
+        elif len(value) == len(longest_value):
+            longest_key.append(key)
+ # Print the key and value with the longest string
+    print("Key(s) with longest value:", longest_key)
+    #print("Longest value:", longest_value)
+
+sequence_length()
+
+def ORF():
+    seqs= file_to_dict('G://dna.example.fasta')
+    #building the ORFs:
+    startA= 'ATG'
+    stopA= ['TAA','TAG','TGA']
+    ORFs= {}
+    for key,value in seqs.items():
+        ORFs[key]= []
+        for s in range(0,2):
+            for i in range(s,len(value),3):
+                Flag= False
+                codon= value[i:i+3]
+                if codon== startA:
+                    for J in range(i+3,len(value),3):
+                        codon= value[J:J+3]
+                        if codon in stopA:
+                            ORFs[key].append(value[i:J+3])
+                            Flag= True
+                            break
+                if Flag:
+                   break
+    print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
+    print(ORFs)
+    X= find_ORF_details(ORFs)
+    print(X)
