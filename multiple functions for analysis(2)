@@ -1,0 +1,46 @@
+# finding the donor position
+dna= input("please give me a DNA sequence: ")
+donor= dna.find("GT",0)
+while donor> -1:
+    print("the donor site position is ", donor+1,donor+2)
+    donor=dna.find("GT",donor+1)
+    
+#finding valid aminoacids in a protein sequence
+protein_seq= input("please give me a protein seqence")
+valids= "ABC"
+for i in range(len(protein_seq)):
+    if protein_seq[i] not in valids:
+        print("protein contains invalid amino aicd at position",i," and the amino acid is" ,protein_seq[i])
+        
+        
+# a clinical project :
+
+A= input('responsive to cold?')
+if A== 'yes':
+    B= input('pain or discomfort?')
+    if B== 'no':
+        print('normal')
+    elif B== 'yes':
+        C= input('does it linger?')
+        if C== 'yes':
+            print('symptomatic irreversible pulpitis')
+        elif C== 'no':
+            print('reversible pulpitis')
+        else:
+            print('error')
+            C= input('does it linger?')
+    else:
+        print('error')
+        B= input('pain or discomfort?')
+elif A== 'no':
+    D= input('do control teeth respond similarly?')
+    if D== 'no':
+        print('pulpal necrosis')
+    elif D== 'yes':
+        print('nonresponsive, retest using EPT')
+    else: 
+        print('error')
+        D= input('do control teeth respond similarly?')
+else:
+    print('error')
+    A= input('responsive to cold?')
