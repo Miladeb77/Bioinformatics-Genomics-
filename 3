@@ -1,0 +1,115 @@
+def reading(path):
+    import openpyxl
+    wb_read= openpyxl.load_workbook(path)
+    sheet_read= wb_read.active
+    b= sheet_read.max_column
+    c= ''
+    d= ''
+    for j in range(b):
+        cell_read= sheet_read.cell(row=1 , column= j+1)
+        c+= cell_read.value
+    for j in range(b):
+        cell_read= sheet_read.cell(row=2 , column= j+1)
+        d+= cell_read.value
+        list1= [c,d]
+    return list1
+
+def DNAsimilarity(DNA):
+    Similarityscore= 0
+    SEQ1= DNA[0]
+    SEQ2= DNA[1]
+    i= 0
+    for i in range(len(SEQ1)):
+        if SEQ1[i]== SEQ2[i]:
+            Similarityscore+= 10
+        elif SEQ1[i]== 'A' and SEQ2[i]== 'T':
+            Similarityscore+= 5
+        elif SEQ1[i]== 'T' and SEQ2[i]== 'A':
+            Similarityscore+= 5
+        elif SEQ1[i]== 'C' and SEQ2[i]== 'G':
+            Similarityscore+= 5
+        elif SEQ1[i]== 'G' and SEQ2[i]== 'C':
+            Similarityscore+= 5
+        else:
+            Similarityscore+= -5
+    return Similarityscore     
+
+def transcription(DNA):
+    A=''
+    B=''
+    SEQ1= DNA[0]
+    SEQ2= DNA[1]
+    for i in range(len(SEQ1)):
+        if SEQ1[i]== 'A':
+            A+= 'U'
+        elif SEQ1[i]== 'T':
+            A+= 'A'
+        elif SEQ1[i]== 'C':
+            A+= 'G'
+        elif SEQ1[i]== 'G':
+            A+= 'C'
+    for i in range(len(SEQ2)):
+        if SEQ2[i]== 'A':
+            B+= 'U'
+        elif SEQ2[i]== 'T':
+            B+= 'A'
+        elif SEQ2[i]== 'C':
+            B+= 'G'
+        elif SEQ2[i]== 'G':
+            B+= 'C'  
+    transcripts= [A,B]
+    return transcripts
+
+def translation(mRNA):
+    tri1= mRNA[0]
+    tri2= mRNA[1]
+    G= ''
+    H= ''
+    for i in range(0,len(tri1),3):
+        Z= tri1[i:i+3]
+        if len(Z)== 3:
+            if 'A' not in Z and len(set(Z))== 3:
+                    G+= 'S'
+            elif 'U' not in Z and len(set(Z))== 3:
+                    G+= 'P'
+            elif 'G' not in Z and len(set(Z))== 3:
+                    G+= 'B'
+            elif 'C' not in Z and len(set(Z))== 3:
+                    G+= 'F' 
+            else:
+                G+= '*'
+    for l in range(0,len(tri2),3):
+        Y= tri2[l:l+3]
+        if len(Y)== 3:
+            if 'A' not in Y and len(set(Y))== 3:
+                    H+= 'S'
+            elif 'U' not in Y and len(set(Y))== 3:
+                    H+= 'P'
+            elif 'G' not in Y and len(set(Y))== 3:
+                    H+= 'B'
+            elif 'C' not in Y and len(set(Y))== 3:
+                    H+= 'F' 
+            else:
+                H+= '*'
+
+    translation= [G,H]
+    return translation   
+
+def Proteinsimilarity(translation):
+    proteinsimilarity= 0
+    seq1= translation[0]
+    seq2= translation[1]
+    for i in range(len(seq1)):
+        if seq1[i]== 'S' and seq2[i]== 'S':
+            proteinsimilarity+= 10
+        if seq1[i]== 'P' and seq2[i]== 'P':
+            proteinsimilarity+= 10 
+        if seq1[i]== 'B' and seq2[i]== 'B':
+            proteinsimilarity+= 10  
+        if seq1[i]== 'F' and seq2[i]== 'F':
+            proteinsimilarity+= 10
+        if seq1[i]== '*' and seq2[i]== '*':
+            proteinsimilarity+= -5
+        else: 
+            proteinsimilarity+= -5
+    return proteinsimilarity
