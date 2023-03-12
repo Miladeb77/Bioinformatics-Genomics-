@@ -1,0 +1,109 @@
+# analyse single cell data in R using seurat package
+
+# retrieving the dataset from the 10X platform 
+
+#  retireve the gene exppression data for the none-small cell from lung cancer(NSCLC) from 7 donors 
+
+# download the count matrix ( the gene expression- feature / cell matrix HDFS (raw))
+# it is in the HDF5 format
+
+# load libraries 
+library(Seurat)
+library(tidyverse)
+
+#  read the counts data:
+nsclc.sparse.m<- Read10X_h5(filename='C:/Users/IHC/OneDrive/Documents/scripts/data/lung_cancer/40k_NSCLC_DTC_3p_HT_nextgem_Multiplex_count_raw_feature_bc_matrix.h5')
+
+
+# checking the modalities:
+str(nsclc.sparse.m)
+
+#  the counts for gene expression :
+cts<- nsclc.sparse.m$`Gene Expression`
+
+
+#converting the counts into a seraut object 
+nsclc.seurat.obj<- CreateSeuratObject(counts= cts, project= 'NSCLC', min.cells= 3, min.features= 200)
+
+
+# checking the seurat object:
+str(nsclc.seurat.obj)
+
+#  quality control
+
+
+# calculate the percentage of mitrocondrial genes and add another column to meta data:
+nsclc.seurat.obj[["percent.mt"]]<- PercentageFeatureSet(nsclc.seurat.obj, pattern= '^MT-')
+
+# checking the metadata:
+View(nsclc.seurat.obj@meta.data)
+
+#  visualize  features as a violin plot: 
+VlnPlot(nsclc.seurat.obj, features= c("nFeature_RNA", "nCount_RNA", "percent.mt"), ncol= 3)
+
+# featureScatter plot to capture the features together
+FeatureScatter(nsclc.seurat.obj, feature1= "nCount_RNA", feature2= "nFeature_RNA") +
+  geom_smooth(method= 'lm')
+
+
+# filtering:
+
+nsclc.seurat.obj<- subset(nsclc.seurat.obj, subset= nFeature_RNA> 200 & nFeature_RNA< 2500 &
+                            percent.mt < 5)
+                            
+#  normalizing the data
+nsclc.seurat.obj<- NormalizeData(nsclc.seurat.obj, normalization.method= "LogNormalize", scale.factor = 10000)
+
+
+
+# identify highly variable features
+nsclc.seurat.obj<- FindVariableFeatures(nsclc.seurat.obj, selection.method =  "vst", nfeatures= 2000)
+
+#checking the top 10 variable features:
+top10<- head(VariableFeatures(nsclc.seurat.obj),10)
+
+
+# visualize the variable features:
+plot1<- VariableFeaturePlot(nsclc.seurat.obj)
+#lableing the plot:
+LabelPoints(plot= plot1, points= top10, repel= TRUE)
+
+#scaling the data:
+nsclc.seurat.obj<- ScaleData(nsclc.seurat.obj, features= all.genes)
+
+# we can take a look:
+str(nsclc.seurat.obj)
+
+
+#  perform linear dimentionality reduction(PCA)
+nsclc.seurat.obj<- RunPCA(nsclc.seurat.obj, features= VariableFeatures(object= nsclc.seurat.obj))
+
+#visualize PCA results:
+print(nsclc.seurat.obj[["pca"]], dims= 1:5, nfeatures= 5)
+DimHeatmap(nsclc.seurat.obj, dims= 1, cells= 500, balanced= TRUE)
+
+# determining the dimentionality of the dataset:
+ElbowPlot(nsclc.seurat.obj)
+
+#  cluster the cells:
+# cluster cells that have similar expression patterns
+
+# identify the neighbors:
+nsclc.seurat.obj<- FindNeighbors(nsclc.seurat.obj, dims= 1:15)
+
+
+# assigning the cells as clusters
+nsclc.seurat.obj<- FindClusters(nsclc.seurat.obj, resolution= c(0.1,0.3,0.5,0.7,1))
+
+# checking the metadata:
+view(nsclc.seurat.obj@meta.data)
+
+
+
+# ploting a dimplot, grouping the cells by a resolution column in metadata
+DimPlot(nsclc.seurat.obj, group.by= "RNA_snn_res.0.1", label= TRUE)
+
+
+#setting identity of clusters:
+
+Idents(nsclc.seurat.obj) <- "RNA_snn_res.0.1"
