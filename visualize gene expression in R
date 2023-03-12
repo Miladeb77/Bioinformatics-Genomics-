@@ -1,0 +1,91 @@
+# visualize gene expression data 
+
+# loading the libraries 
+
+library(tidyverse)
+library(ggplot2)
+
+
+# checking the dataframe before creating plots:
+
+dat.long %>%
+  head()
+
+
+# visualize the gene expression of the gene of interest across all of the samples as a bar plot 
+
+dat.long %>%
+  filter(gene== "BRCA1") %>%
+  ggplot(.,aes(x= samples, y= FPKM, fill= tissue)) +
+  geom_col()
+
+# compare the distribution of expression accross the two types of tissues and compare this data bewtween the two tissues 
+
+
+dat.long  %>%
+  filter(gene== "BRCA1") %>%
+  ggplot(.,aes(x= FPKM, fill= tissue)) + 
+  geom_density(alpha=0.3)
+
+
+# detecting how does the expression differs between samples which have different metastasis status 
+dat.long %>%
+  filter(gene== "BRCA1") %>%
+  ggplot(., aes(x= metastasis, y= FPKM)) +
+  geom_boxplot()
+ 
+
+#creating a violin plot 
+dat.long %>%
+  filter(gene== "BRCA1") %>%
+  ggplot(., aes(x= metastasis, y= FPKM)) +
+  geom_violin()
+
+
+# comparing the expression levels of the two genes to find out whether there is a correlation between the genes
+
+dat.long %>%
+  filter(gene== 'BRCA1' | gene== 'BRCA2') %>%
+  spread(key= gene, value= FPKM) %>%
+  ggplot(.,aes(x= BRCA1, y= BRCA2)) +
+  geom_point() + 
+  geom_smooth(method= 'lm',se = FALSE)
+
+
+# checking this correlation for the samples from the normal tissue and the samples for the breast cancer tumours 
+#separating the samples based on the tissue type 
+
+dat.long %>%
+  filter(gene== 'BRCA1' | gene== 'BRCA2') %>%
+  spread(key= gene, value= FPKM) %>%
+  ggplot(.,aes(x= BRCA1, y= BRCA2, color= tissue)) +
+  geom_point() + 
+  geom_smooth(method= 'lm',se = FALSE)
+
+# heatmap 
+#  comparing the expression levels of multiple genes simultaneously 
+
+genes.of.interest<- c('BRCA1','BRCA2','TP53','ALK','MYCN')
+
+dat.long %>%
+  filter(gene %in% genes.of.interest) %>%
+  ggplot(., aes(x= samples, y= gene, fill= FPKM)) +
+  geom_tile()
+
+# change the colours for more clarity
+dat.long %>%
+  filter(gene %in% genes.of.interest) %>%
+  ggplot(., aes(x= samples, y= gene, fill= FPKM)) +
+  geom_tile() +
+  scale_fill_gradient(low= 'white', high= 'red')
+
+# saving the plots 
+
+p<- dat.long %>%
+  filter(gene %in% genes.of.interest) %>%
+  ggplot(., aes(x= samples, y= gene, fill= FPKM)) +
+  geom_tile() +
+  scale_fill_gradient(low= 'white', high= 'red')
+
+ggsave(p, filename= "heatmap_save1.pdf", width= 10, height= 8)
+
