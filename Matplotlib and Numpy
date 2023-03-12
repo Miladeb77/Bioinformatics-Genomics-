@@ -1,0 +1,32 @@
+import matplotlib.pyplot as plt
+import numpy as np
+
+x= np.array([1,2,3,4,5])
+y= np.array([6,7,8,9,0])
+plt.subplot(2,3,2)
+plt.plot(x,y)
+
+
+x = np.array([80, 85, 90, 95, 100, 105, 110, 115, 120, 125])
+y = np.array([240, 250, 260, 270, 280, 290, 300, 310, 320, 330])
+plt.subplot(2,3,3)
+plt.plot(x,y)
+
+
+x= np.array([1,2,3,4,5])
+y= np.array([6,7,8,9,0])
+plt.subplot(2,3,4)
+plt.plot(x,y)
+
+x = np.array([80, 85, 90, 95, 100, 105, 110, 115, 120, 125])
+y = np.array([240, 250, 260, 270, 280, 290, 300, 310, 320, 330])
+plt.subplot(2,3,5)
+plt.plot(x,y)
+
+
+x= np.array([1,2,3,4,5])
+y= np.array([6,7,8,9,0])
+plt.subplot(2,3,6)
+plt.plot(x,y)
+
+plt.show()
