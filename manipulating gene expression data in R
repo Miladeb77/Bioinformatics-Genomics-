@@ -1,0 +1,45 @@
+# the script manuplates  gene expression data 
+
+# loading the libraries 
+library(dplyr)
+library(GEOquery)
+library(tidyverse)
+
+#read the data
+dat <- read.csv(file= 'C:/Users/IHC/OneDrive/Documents/scripts/data/GSE183947_fpkm.csv')
+
+# retreving the metadata with the GEO package
+gse <- getGEO(GEO= 'GSE183947', GSEMatrix= TRUE) 
+metadata <- pData(phenoData(gse[[1]])) 
+
+#checking the metadata
+head(metadata)
+
+
+# changing some objects in  the metadata:
+metadata.modified <- metadata %>%
+    select(1,10,11,17) %>%
+    rename(tissue= characteristics_ch1) %>% #renaming the header of the column
+    rename(metastasis= characteristics_ch1.1) %>% #renaming the header of the column
+    mutate(tissue = gsub("tissue: ", "", tissue)) %>% #mutate can create new columns in a dataframe or can change something in the value of a column
+    mutate(metastasis = gsub("metastasis: ", "", metastasis)) 
+
+#changing the wide format to long format:
+dat.long<- dat %>%
+  rename(gene= X) %>% 
+  gather(key= 'samples', value= 'FPKM', -gene) 
+
+# merge the metadata.modified with the data.long
+dat.long<- dat.long %>% 
+  left_join(.,metadata.modified, by= c('samples'= 'description'))
+
+
+# explore the expression levels of the candidate genes in both tumour and normal samples 
+dat.long %>%
+  filter(gene== 'BRCA1' | gene== 'BRCA2') %>%
+  # grouping by gene and tissue 
+  group_by(gene,tissue) %>%
+  # calculate the mean and the median 
+  summarize(mean_FPKM= mean(FPKM), median_FPKM= median(FPKM)) %>%
+  # sorting columns 
+  arrange(mean_FPKM) #descending order: arrange(-mean_FPKM)
