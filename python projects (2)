@@ -110,6 +110,25 @@ def sequence_length(path):
  # Print the key and value with the longest string
     print("Key(s) with longest value:", longest_key)
     print("Longest value:", longest_value)
+    
+def repeats(path,n):
+    FASTA_seqs= file_to_dict(path)
+    repeats= {}
+    for header,sequence in FASTA_seqs.items():
+        for i in range(len(sequence) -n +1):
+            repeat= sequence[i:i+n]
+            if repeat not in repeats:
+                repeats[repeat]= 1
+            else:
+                repeats[repeat]+= 1
+    # the most frequent repeat:
+    max_repeat= ""
+    max_repeat_count= 0
+    for repeat,count in repeats.items():
+        if count > max_repeat_count:
+            max_repeat= repeat
+            max_repeat_count= count
+    print(repeats, max_repeat, max_repeat_count)
 
 def ORF(path):
     seqs= file_to_dict(path)
