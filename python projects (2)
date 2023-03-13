@@ -45,7 +45,7 @@ else:
     print('error')
     A= input('responsive to cold?')
     
-  ############################################################  
+# Analysing FASTA file :
     
 def reading_file(path):
     return open(path,'r')
