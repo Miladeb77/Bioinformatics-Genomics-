@@ -1,0 +1,28 @@
+def finding_protein_motif():
+    """ 
+    the function receives at most 15 uniprot ids and then returns all of the positions in which there is a 
+     N-glycosylation motif in the given protein sequence
+    """
+    import requests
+    import re
+    sequences= {}
+    for i in range(15):
+        uniprot_id= input("please give me a protein id. if you have entered all of the ids, enter 0 .")
+        if uniprot_id== '0':
+            break
+        else:
+            url = f'http://www.uniprot.org/uniprot/{uniprot_id}.fasta'
+            response = requests.get(url)
+            sequence_lines = response.text.split('\n')[1:]  # Skip the header line
+            sequence = ''.join(sequence_lines)
+            sequences[uniprot_id] = sequence
+    
+    motif_positions= {}
+    pattern = r'N[^P](S|T)[^P]'
+    for key, value in sequences.items():
+        motif_positions[key] = []
+        for i in range(len(value)):
+            if re.match(pattern, value[i:i+4]):
+                motif_positions[key].append(i)
+
+    return motif_positions
