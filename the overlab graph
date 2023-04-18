@@ -1,0 +1,24 @@
+def overlap_graph(path):
+    with open(path, 'r') as f:
+        sequences = {}
+        current_id = ''
+        for line in f:
+            line = line.rstrip()
+            if line[0] == '>':
+                current_id = line[1:]
+                sequences[current_id] = ''
+            else:
+                sequences[current_id] += line
+    adj_list = {}
+    k = 3
+    for s in sequences:
+        suffix = sequences[s][-k:]
+        adj_list[s] = []
+        for t in sequences:
+            if s != t and sequences[t][:k] == suffix:
+                adj_list[s].append(t)
+        if adj_list[s] == []:
+            del adj_list[s]
+    for key,value in adj_list.items():
+        for i in range(len(value)):
+            print(key,'->', value[i])
