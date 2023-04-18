@@ -1,0 +1,36 @@
+def mRNA_translation(seq):
+
+    rna_codon_table = {
+    "UUU": "F", "UUC": "F", "UUA": "L", "UUG": "L",
+    "UCU": "S", "UCC": "S", "UCA": "S", "UCG": "S",
+    "UAU": "Y", "UAC": "Y", 
+    "UGU": "C", "UGC": "C", "UGG": "W",
+    "CUU": "L", "CUC": "L", "CUA": "L", "CUG": "L",
+    "CCU": "P", "CCC": "P", "CCA": "P", "CCG": "P",
+    "CAU": "H", "CAC": "H", "CAA": "Q", "CAG": "Q",
+    "CGU": "R", "CGC": "R", "CGA": "R", "CGG": "R",
+    "AUU": "I", "AUC": "I", "AUA": "I",
+    "ACU": "T", "ACC": "T", "ACA": "T", "ACG": "T",
+    "AAU": "N", "AAC": "N", "AAA": "K", "AAG": "K",
+    "AGU": "S", "AGC": "S", "AGA": "R", "AGG": "R",
+    "GUU": "V", "GUC": "V", "GUA": "V", "GUG": "V",
+    "GCU": "A", "GCC": "A", "GCA": "A", "GCG": "A",
+    "GAU": "D", "GAC": "D", "GAA": "E", "GAG": "E",
+    "GGU": "G", "GGC": "G", "GGA": "G", "GGG": "G"
+}
+    start_codon= 'AUG'
+    stop_codons= ["UAA","UAG","UGA"]
+    protein_seq= ''
+
+    for i in range(0,len(seq),3):
+        codon= seq[i:i+3]
+        if codon== start_codon:
+            for j in range(i+3,len(seq),3):
+                codon= seq[j:j+3]
+                if codon not in rna_codon_table:
+                    continue
+                elif codon in rna_codon_table:
+                    protein_seq+= rna_codon_table[codon]
+                elif codon in stop_codons:
+                    break
+    return protein_seq
