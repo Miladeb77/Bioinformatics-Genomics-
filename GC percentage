@@ -1,0 +1,22 @@
+def GC_percentage(path):
+    seqs= {}
+    GC_contents= {}
+    with open(path, 'r') as f:
+        for line in f:
+            if line[0]== ">":
+                line= line.rstrip()
+                name= line[1:]
+                seqs[name]= ''
+            else:
+                line= line.rstrip()
+                seqs[name]= seqs[name] + line 
+    for name,seq in seqs.items():
+        key = name 
+        GC_contents[key]= ((seq.count('C')+seq.count('G'))/len(seq))*100
+    max_value= 0
+    identifier= ""
+    for key,value in GC_contents.items():
+        if value>max_value:
+            max_value= value
+            identifier= key
+        return identifier, max_value 
