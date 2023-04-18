@@ -1,4 +1,4 @@
-# the script manuplates  gene expression data 
+# the script manuplates  gene expression data from breast cancer dataset 
 
 # loading the libraries 
 library(dplyr)
