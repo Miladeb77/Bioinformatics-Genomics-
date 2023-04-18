@@ -1,0 +1,61 @@
+def file_to_dict(path):
+    f= reading_file(path)
+    seqs={}
+    name= ''
+    for line in f:
+        # discarding any new line at the end
+        line= line.rstrip()
+        #distinquishing header from the sequence
+        if line[0]== '>':
+            #spliting the line into words so that we could get our key for the dictionary
+            words= line.split() # spliting is based on space by default
+            #building the key for dictionary and the key is the first word of the identifier line 
+            name= words[0][1: ]
+            #identifying the key and setting an empty value for it 
+            seqs[name]= ''
+        else: # for those lines that are not the header and re the lines for the sequences
+            seqs[name]= seqs[name]+ line
+    return seqs
+    
+    
+def ORF(path):
+    seqs= file_to_dict(path)
+    #building the ORFs:
+    startA= 'ATG'
+    stopA= ['TAA','TAG','TGA']
+    ORFs= {}
+    for key,value in seqs.items():
+        ORFs[key]= []
+        for s in range(0,2):
+            for i in range(s,len(value),3):
+                Flag= False
+                codon= value[i:i+3]
+                if codon== startA:
+                    for J in range(i+3,len(value),3):
+                        codon= value[J:J+3]
+                        if codon in stopA:
+                            ORFs[key].append(value[i:J+3])
+                            Flag= True
+                            break
+                if Flag:
+                    break
+    return ORFs
+    
+    
+def find_ORF_details(path):
+    ORFs= ORF(path)
+    ORF_details= {}
+    for key,value in ORFs.items():
+        max_len_ORF= 0
+        max_NUM= 0
+        max_value= ''
+        for i in range(len(value)):
+            if len(value[i]) > max_len_ORF:
+                max_NUM= i
+                max_len_ORF= len(value[i])
+                max_value= value[i]
+        ORF_details[key]= {"max_len_ORF":max_len_ORF,"max_NUM": max_NUM, "max_value": max_value}
+    return ORF_details 
+    
+    
+  
