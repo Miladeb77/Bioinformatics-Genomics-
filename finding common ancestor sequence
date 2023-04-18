@@ -1,0 +1,38 @@
+def find_common_ancestor(path):
+    with open(path,"r") as f:
+        sequence_list= []
+        for line in f:
+            if line[0] != ">":
+                line= line.rstrip()
+                sequence_list.append(line)
+    import numpy as np
+    sequence_array= np.array(sequence_list)
+    sequence_profile= {"A": [], "C":[], "T":[], "G": []}
+    for col in range(len(sequence_array[0])):
+        counterA= 0
+        counterC= 0 
+        counterG= 0
+        counterT= 0
+        for row in range(len(sequence_array)):
+            if sequence_array[row][col]== "A":
+                counterA+= 1
+            elif sequence_array[row][col]== "C":
+                counterC+= 1
+            elif sequence_array[row][col]== "G":
+                counterG+= 1
+            elif sequence_array[row][col]== "T":
+                counterT+= 1
+        sequence_profile["A"].append(counterA)
+        sequence_profile["C"].append(counterC)
+        sequence_profile["T"].append(counterT)    
+        sequence_profile["G"].append(counterG)  
+    profile_array = np.array(list(sequence_profile.values()))
+    consensus= ""
+    for col in range(len(profile_array[0])):
+        max_count = max(profile_array[:,col])
+        consensus_nuc = ""
+        for nuc in ["A", "C", "T", "G"]:
+            if sequence_profile[nuc][col] == max_count:
+                consensus_nuc = nuc
+        consensus += consensus_nuc
+    return consensus
