@@ -1,0 +1,24 @@
+def find_shared_motif(path):
+    with open(path, 'r') as f:
+        sequences = {}
+        current_id = ''
+        for line in f:
+            line = line.rstrip()
+            if line[0] == '>':
+                current_id = line[1:]
+                sequences[current_id] = ''
+            else:
+                sequences[current_id] += line
+    seqs = list(sequences.values())
+    
+    shared_motif_list = []
+    for i in range(len(seqs[0])):
+        for j in range(i, len(seqs[0])):
+            motif = seqs[0][i:j+1]
+            for seq in seqs[1:]:
+                if motif not in seq:
+                    break
+            else:
+                shared_motif_list.append(motif)
+
+    return max(shared_motif_list, key=len) 
