@@ -1,4 +1,4 @@
-import string
+
 
 def z_array(s):
     """ Use Z algorithm (Gusfield theorem 1.4.1) to preprocess s """
